@@ -44,13 +44,19 @@ def config_variable(request, variable_name = None, mimetype = None):
     return HttpResponse(output, mimetype = mimetype)
 
 def about(request, template='about.html'):
-    title = _('About %(site)s') % {'site': askbot_settings.APP_SHORT_NAME}
-    data = {
-        'title': title,
-        'page_class': 'meta',
-        'content': askbot_settings.FORUM_ABOUT
-    }
-    return render(request, 'static_page.html', data)
+    if askbot_settings.FORUM_FAQ.strip() != '':
+        title = _('About %(site)s') % {'site': askbot_settings.APP_SHORT_NAME}
+        data = {
+            'title': title,
+            'page_class': 'meta',
+            'content': askbot_settings.FORUM_ABOUT
+        }
+        return render(request, 'static_page.html', data)
+    else:
+        data = {
+            'page_class': 'meta',
+        }
+        return render(request, 'about_static.html', data)
 
 def page_not_found(request, template='404.html'):
     return generic_view(request, template)
