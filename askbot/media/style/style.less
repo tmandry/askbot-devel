@@ -38,6 +38,9 @@ input, select {
     font-family: Trebuchet MS, "segoe ui", Helvetica, Tahoma, Verdana, MingLiu, PMingLiu, Arial, sans-serif;
     margin-left:0px;
 }
+select {
+    width: 100%;
+}
 
 input[type="text"].prompt,
 input[type="password"].prompt,
@@ -143,6 +146,13 @@ html {
     visibility: hidden;
 }
 
+.invisible {
+    margin: -1px 0 0 -1px;
+    height: 1px;
+    overflow: hidden;
+    width: 1px;
+}
+
 .badges a {
     color: #763333;
     text-decoration: underline;
@@ -208,7 +218,7 @@ body.user-messages {
 
 .wait-icon-box {
     text-align: center;
-    margin-bottom: 8px;
+    margin: 5px 0 8px;
 }
 
 #closeNotify {
@@ -488,6 +498,19 @@ body.user-messages {
     z-index: 10000;
     position: relative;
 
+    /* the guts are absolute-positioned */
+    input.searchInput,
+    div.input-tool-tip,
+    input[type="submit"].searchBtn,
+    input[type="button"].cancelSearchBtn {
+        position: absolute;
+        z-index: 100;
+    }
+
+    input.searchInput {
+        z-index: 99;/* just below the buttons and the hint */
+    }
+
     input.searchInput {
         font-size: 22px;
         height: 26px;
@@ -499,19 +522,36 @@ body.user-messages {
         font-family:@body-font;
         width: 100%;
         margin: 8px 0 6px 0;
-        padding: 0;
-        -webkit-box-shadow: none;
-        -moz-box-shadow: none;
-        box-shadow: none;
+        padding: 0 80px 0 8px;
+        top: 0;
+        left: 0;
+        .box-shadow(0, 0, 0);
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
     }
 
     div.input-tool-tip {
-        margin-top: -40px;
-        padding-top: 10px;
-        height: 30px;
-        line-height: 20px;
+        padding: 0 0 0 10px;
+        height: 41px;
+        line-height: 41px;
         font-size: 20px;
         font-style: italic;
+        bottom: 0;
+        left: 0;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        width: 100%a
+    }
+
+    input[type="submit"].searchBtn {
+        right: 0;
+        top: 0;
+    }
+    input[type="button"].cancelSearchBtn {
+        right: 48px;
+        top: 0;
     }
 }
 
@@ -522,7 +562,6 @@ body.user-messages {
     border-top: none;
     margin: 0;
     position: relative;
-    top: 0;
     z-index: 10000;
 
     ul {
@@ -531,6 +570,7 @@ body.user-messages {
         padding: 0 0 10px 0;
         margin: 0;
         position: relative;
+        width: 100%;
         li {
             padding: 5px 10px;
             position: relative;
@@ -552,13 +592,13 @@ body.user-messages {
 
     .footer {
         text-align: center;
-        padding-bottom: 10px;
+        padding: 9px 0 10px 0;
     }
 }
 
 .search-drop-menu.empty {
     ul {
-        padding: 5px;
+        padding: 1px;
         margin: 0;
     }
 }
@@ -578,14 +618,26 @@ input[type="submit"].searchBtn {
     border:#FFF 1px solid;
     line-height: 22px;
     text-align: center;
-    float:right;
-    margin: 7px 28px 0 0;
+    margin: 1px 0 0 0;
     width: 48px;
-    .sprites(-98px,-36px);
+    .sprites(-98px,-37px);
+    .rounded-corners(0);
+    .box-shadow(0, 0, 0);
     cursor:pointer;
-    position: relative;
     z-index: 10001;
 }
+
+.groups-page, /* todo: clean up - should not need this */
+.badges-pages,
+.user-profile-page,
+.meta,
+.openid-signin,
+.users-page {
+    input[type="submit"].searchBtn {
+        margin-top: 1px;
+    }
+}
+
 .ask-page {
     input[type="submit"].searchBtn {
         display: none;
@@ -604,24 +656,28 @@ input[type="submit"].searchBtn {
     }
 }
 
-.searchBtn:hover {
-    .sprites(-98px-48,-36px);
+input[type="submit"].searchBtn:hover {
+    background-image: none;
+    background-image: none;
+    background-image: none;
+    background-image: none;
+    background-image: none;
+    background-image: none;
+    .sprites(-98px-48,-37px);
 }
 
-.cancelSearchBtn {
-    font-size: 30px;
-    color: #ce8888;
-    background:#fff;
-    height: 41px;
-    line-height: 42px;
-    border:0px;
-    border-left:#deded0 1px solid;
+input[type="button"].cancelSearchBtn {
+    font-size: 30px !important;
+    color: #aaa;
+    background: #fff !important;
+    height: 37px !important;
+    line-height: 37px;
+    border: 0px;
+    .box-shadow(0, 0, 0);
+    .rounded-corners(0);
     text-align: center;
-    width: 35px;
+    width: 35px !important;
     cursor:pointer;
-    float: right;
-    margin-top: 7px;
-    position: relative;
     z-index: 10001;
 }
 
@@ -629,17 +685,98 @@ input[type="submit"].searchBtn {
     color: #d84040;
 }
 
-#askButton{ /* check blocks/secondary_header.html and widgets/ask_button.html*/
-    line-height:44px;
-    margin-top:6px;
-    float:right;
-    text-transform:uppercase;
-    .button-style(42px, 20px);
-    width: 200px;/* to match width of sidebar */
+button,
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+.button {
+    border: 0 !important;
+    border-top: #eaf2f3 1px solid;
+    cursor: pointer;
+    color: @button-label;
+    font-family: @main-font;
+    font-size: 14px;
+    font-weight: bold;
+    height: 27px;
+    margin-right: 10px;
+    text-align: center;
+    text-decoration: none;
+    .text-shadow(0px,1px,0px,#c6d9dd);
+    .linear-gradient(#d1e2e5,#a9c2c7);
+    .rounded-corners(4px);
+    .box-shadow(1px, 1px, 2px, #636363)
+}
+button.large,
+input[type="submit"].large,
+input[type="button"].large,
+input[type="reset"].large,
+.button.large {
+    font-size: 20px;
+    height: 35px;
+    line-height: 35px;
+    padding: 0 10px;
 }
 
-#askButton:hover{
-    .button-style-hover;
+button:hover, 
+input[type="submit"]:hover,
+.button:hover {
+    .linear-gradient(#cde5e9,#94b3ba);
+    text-decoration:none;
+    .text-shadow(0px, 1px, 0px, #c6d9dd);
+}
+
+input[type="submit"].link {
+    .box-shadow(0, 0, 0);
+    .text-shadow(0, 0, 0);
+    font-weight: normal;
+}
+
+input[type="submit"].link:hover {
+    text-decoration: underline;
+}
+
+form.ajax-file-upload {
+    height: 60px;
+    position: relative;
+    input[type="file"],
+    input.fake-file-input {
+        cursor: pointer;
+        height: 32px;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    input[type="file"] {
+        z-index: 2;
+        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+        filter: alpha(opacity=0);
+        -moz-opacity: 0;
+        -khtml-opacity: 0;
+        opacity: 0;
+    }
+    input.fake-file-input {
+        z-index: 1;
+    }
+    label,
+    img.spinner {
+        bottom: 0;
+        left: 3px;
+        position: absolute;
+    }
+    img.spinner {
+        bottom: 6px;
+        left: 10px;
+    }
+}
+
+#askButton { /* check blocks/secondary_header.html and widgets/ask_button.html*/
+    float:right;
+    font-size: 20px;
+    height: 42px;
+    line-height: 44px;
+    margin-top: 6px;
+    text-transform: uppercase;
+    width: 200px;/* to match width of sidebar */
 }
 
 /* 
@@ -662,16 +799,50 @@ input[type="submit"].searchBtn {
 body.anon.ask-page .search-drop-menu {
     margin: 0;
 }
-body.anon {
+#scopeNav {
+    height: 41px;
+    float: left;
+    width: 280px;
+}
+.scopes-True-True-False {
     #searchBar,
     .search-drop-menu {
-        margin-left: 227px;/* we don't have the "followed" scope */
+        margin-left: 228px;
+    }
+    #scopeNav {
+        width: 180px;
     }
 }
-#searchBar.cancelable {
-    padding-right: 82px;
+.scopes-True-False-True {
+    #searchBar,
+    .search-drop-menu {
+        margin-left: 203px;
+    }
+    #scopeNav {
+        width: 150px;
+    }
 }
-
+.scopes-False-True-True {
+    #searchBar,
+    .search-drop-menu {
+        margin-left: 286px;
+    }
+    #scopeNav {
+        width: 238px;
+    }
+}
+.scopes-True-False-False,
+.scopes-False-True-False,
+.scopes-False-False-True,
+.scopes-False-False-False {
+    #searchBar,
+    .search-drop-menu {
+        margin-left: 52px;
+    }
+    #scopeNav {
+        width: 0;
+    }
+}
 
 /* ----- Content layout, check two_column_body.html or one_column_body.html ----- */
 
@@ -697,7 +868,7 @@ body.anon {
 
 .box {
     background: #fff;
-    padding: 4px 0px 10px 0px;
+    padding: 4px 0px 10px 1px;
     width:200px;
     overflow: hidden;
 
@@ -800,16 +971,8 @@ body.anon {
         #subscribedTagAdd,
         #ab-tag-search-add {
             border:0;
-            font-weight:bold;
             margin-top:-2px;
-            .button-style(27px, 14px);
-            .rounded-corners(4px);
         }
-       #interestingTagAdd:hover,
-       #ignoredTagAdd:hover,
-       #ab-tag-search-add:hover {
-            .button-style-hover;
-       }
        #ab-tag-search-add {
             width: 47px;
        }
@@ -822,19 +985,15 @@ body.anon {
 /* widgets for question template */
 
     a.followed, a.follow{
+        height: 34px;
+        font-size: 21px;
         line-height:34px;
         border:0;
         font-weight:normal;
         margin-top:3px;
         display:block;
-        .button-style(34px,21px);
         .center;
         width: 130px;
-    }
-
-    a.followed:hover, a.follow:hover{
-        .button-style-hover;
-        .text-shadow(0px, 1px, 0px, #c6d9dd);
     }
 
     a.followed div.unfollow{
@@ -1334,7 +1493,7 @@ ul.tags.marked-tags,
 ul#related-tags {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 0 0 0 1px;
     line-height: 170%;
     display: block;
 }
@@ -1357,9 +1516,7 @@ ul.tags.marked-tags li,
 }
 
 #tagSelector div.inputs {
-    clear: both;
-    float: none;
-    margin-bottom:10px;
+    margin: 6px 0 12px 0;
 }
 
 .tags-page ul.tags li,
@@ -1660,10 +1817,7 @@ ul#related-tags li {
 .add-groups,
 .add-users {
     border:0;
-    font-weight:bold;
     margin-top:-2px;
-    .button-style(27px, 14px);
-    .rounded-corners(4px);
 }
 
 .share-input-col {
@@ -1677,10 +1831,6 @@ ul#related-tags li {
     display: block;
     padding: 0 10px;
     height: 25px;
-}
-
-.add-groups:hover {
-    .button-style-hover;
 }
 
 #id_user,
@@ -1704,10 +1854,7 @@ ul#related-tags li {
 .add-groups,
 .add-users {
     border:0;
-    font-weight:bold;
     margin-top:-2px;
-    .button-style(27px, 14px);
-    .rounded-corners(4px);
 }
 
 .add-everyone-group {
@@ -1715,10 +1862,6 @@ ul#related-tags li {
     margin: auto;
     display: block;
     padding: 0 10px;
-}
-
-.add-groups:hover {
-    .button-style-hover;
 }
 
 #id_user,
@@ -1749,16 +1892,10 @@ ul#related-tags li {
 .edit-question-page input.submit {
     float: left;
     font-weight:normal;
+    height: 35px;
+    font-size: 20px;
     margin-top:3px;
-    .button-style(34px,21px);
     margin-right:7px;
-}
-
-#fmanswer input.submit:hover,
-.ask-page input.submit:hover,
-.edit-question-page input.submit:hover{
-    .button-style-hover;
-    .text-shadow(0px, 1px, 0px, #c6d9dd)
 }
 
 .wmd-container {
@@ -1768,7 +1905,7 @@ ul#related-tags li {
     }
 }
 .users-page .wmd-container {
-    width: 200px;
+    width: auto;
 }
 .ask-page,
 .question-page,
@@ -1777,6 +1914,10 @@ ul#related-tags li {
     .wmd-container {
         width: 723px;
         width: 100%;
+    }
+    .post-comments .wmd-container {
+        margin-bottom: 8px;
+        margin-left: -2px;
     }
     #editor {
         -webkit-box-sizing: border-box;
@@ -1803,7 +1944,7 @@ ul#related-tags li {
 }
 
 .users-page #editor {
-    width: 192px;
+    width: 187px;
 }
 
 #id_title {
@@ -1946,9 +2087,9 @@ ul#related-tags li {
 
 /* ----- Question template ----- */
 
-.question-page{
+.question-page {
 
-    h1{
+    h1 {
         padding-top:0px;
         font-family:@main-font;
 
@@ -2010,6 +2151,10 @@ ul#related-tags li {
     #question-table td {
         width:20px;
         vertical-align:top;
+    }
+    .answer-table .mceEditor td,
+    #question-table .mceEditor td {
+        width: auto;
     }
     .question-body, .answer-body {
         overflow: auto;
@@ -2264,22 +2409,32 @@ ul#related-tags li {
         clear: both;
         
         div.controls {
-              clear: both;
+            clear: both;
             float:left;
             width: 100%;
             margin: 3px 0 20px 5px;
         }
+
+        .edit-comment-buttons {
+            margin-left: -4px;
+            .checkbox {
+                margin: 3px;
+            }
+        }
         
         .controls a {
-             color: #988e4c;
-            padding: 0 3px 2px 22px;
-            font-family:@body-font;
-            font-size:13px;
-            background:url(../images/comment.png) no-repeat center left;
+            border: none;
+            color: #988e4c;
+            padding: 0 3px 5px 22px;
+            font-family: @body-font;
+            font-size: 13px;
+            font-weight: normal;
+            background: url(../images/comment.png) no-repeat center left;
+            .box-shadow(0, 0, 0);
+            .text-shadow(0, 0, 0);
         }
 
         .controls a:hover {
-            background-color: #f5f0c9;
             text-decoration: none;
         }
 
@@ -2296,49 +2451,56 @@ ul#related-tags li {
         }
         
         form.post-comments {
-            margin: 3px 26px 0 42px;
-            textarea{
-                font-size: 13px;
-                line-height: 1.3;
-
-            }
+            padding: 6px 6px 7px 42px;
+            border-bottom: 1px solid #edeeeb;
+            margin-bottom: 0;
         }
 
         textarea {
-            height: 42px;
-            width:100%;
-            margin: 7px 0 5px 1px;
+            box-sizing: border-box;
+            border: #cce6ec 3px solid;
+            color: #666;
             font-family: @body-font;
+            font-size: 13px;
+            height: 54px;
+            line-height: 1.3;
+            margin: -1px 0 0 1px;
             outline: none;
             overflow:auto;
-            font-size: 12px;
-            line-height: 140%;
-            padding-left:2px;
-            padding-top:3px;
-            border:#cce6ec 3px solid;
+            padding: 5px 19px 2px 3px;
+            width: 99.6%;
         }
-        
+        .wmd-container textarea {
+            border: none;
+        }
+        .transient-comment {
+            margin-bottom: 3px; /* match paragraph style */
+        }
         input {
             margin-left: 10px;
             margin-top: 1px;
             vertical-align: top;
             width: 100px;
         }
-        button{
-            line-height:25px;
-            margin-bottom:5px;
-            .button-style(27px, 12px);
-            font-family:@body-font;
-            font-weight:bold;
+
+        input[name="suppress_email"] {
+            margin: 4px 5px 0 0;
+            width: auto;
         }
-        button:hover{
-            .button-style-hover;
+        label[for="suppress_email"] {
+            vertical-align: top;
+        }
+
+        button.submit {
+            height: 26px;
+            line-height: 26px;
+            padding: 0 8px;
+            margin-right: 6px;
         }
         .counter {
             display: inline-block;
             width: 245px;
             float:right;
-            color:#b6a475 !important;
             vertical-align: top;
             font-family:@body-font;
             float:right;
@@ -2346,16 +2508,16 @@ ul#related-tags li {
         }
         .comment {
             border-bottom: 1px solid #edeeeb;
-            clear:both;
+            clear: both;
             margin: 0;
-            margin-top:8px;
-            padding-bottom:4px;
+            padding-bottom: 4px;
             overflow: auto;
-            font-family:@body-font;
-            font-size:11px;
+            font-family: @body-font;
+            font-size: 11px;
             min-height: 25px;
-            background:#fff url(../images/comment-background.png) bottom repeat-x;
-            .rounded-corners(5px);
+        }
+        .comment:last-child {
+            border-bottom: none;
         }
         div.comment:hover {
             background-color: #efefef;
@@ -2402,29 +2564,32 @@ ul#related-tags li {
                 padding-left:6px;
             }
 
-            .convert-comment{
-              display: inline;
-              white-space: nowrap;
-              padding-left: 0px;
+            .convert-comment {
+                display: inline;
+                white-space: nowrap;
+                padding-left: 0px;
+                input {
+                    background: none;
+                    padding: 0px;
+                    color: #1B79BD;
+                    border:none;
+                    height: 13px;
+                    width:auto;
+                    font-family: Arial;
+                    font-size: 13px;
+                    font-weight: normal;
+                    line-height: 13px;
+                    margin: 0 0 0 8px;
+                    .box-shadow(0, 0, 0);
+                    .text-shadow(0, 0, 0);
+                }
+
+                input:hover {
+                    text-decoration: underline;
+                    cursor: pointer;
+                }
             }
 
-            .convert-comment input{
-              background: none;
-              padding: 0px;
-              color: #1B79BD;
-              border:none;
-              width:auto;
-              font-family: Arial;
-              line-height: 14px;
-              margin-left: 6px;
-              font-size: 13px;
-              box-shadow: none;
-            }
-
-            .convert-comment input:hover{
-              text-decoration:underline;
-              cursor:pointer;
-            }
         }
 
         .comment-body p{
@@ -2708,11 +2873,6 @@ ul#related-tags li {
     input.submit{
         font-weight:normal;
         margin:5px 0px;
-        .button-style(26px,15px);
-        font-family:@body-font;
-    }
-    input.submit:hover{
-        .button-style-hover;
     }
     .cancel{
         background:url(../images/small-button-cancel.png) repeat-x top !important;
@@ -2724,6 +2884,18 @@ ul#related-tags li {
     .re {
         float: left;
         width: 960px;
+    }
+}
+
+.user-profile-page.inbox-group-join-requests {
+    form {
+        margin-bottom: 0;
+    }
+    table {
+        margin-bottom: 13px;
+    }
+    td {
+        padding-right: 10px;
     }
 }
 
@@ -2758,17 +2930,6 @@ ul#related-tags li {
         padding: 0px 0 0 5px;
         border:#cce6ec 3px solid;
         width:200px;
-    }
-    .submit-b{
-        .button-style(24px,15px);
-        font-family:@body-font;
-        font-weight:bold;
-        padding-right:10px;
-        border:0;
-    }
-
-    .submit-b:hover{
-        .button-style-hover;
     }
 }
 
@@ -2901,12 +3062,6 @@ a:hover.medal {
     .inputs {
         margin-top: 10px; 
         margin-bottom: 10px; 
-        input[type='submit']{
-          .button-style(26px,15px);
-        }
-    }
-    input[type='submit'].select-language {
-        .button-style(26px,15px);
     }
     select {
         margin-bottom: 12px;
@@ -2930,16 +3085,17 @@ a:hover.medal {
     p{font-size:13px;}
 }
 
+.follow-toggle {
+    height: auto;
+}
+
 .follow-toggle,.submit {
-    border:0 !important;
     font-weight:bold;
     line-height:26px;
     margin-top:-2px;
-    .button-style(26px,14px);
 }
 
 .follow-toggle:hover, .submit:hover {
-    .button-style-hover;
     text-decoration:none !important;
 }
 
@@ -3139,32 +3295,41 @@ ins .post-tag, ins p, ins {
     background-color: #E6F0A2;
 }
 
+body.question-page ins,
+body.main-page ins {
+    /* a hack for google adwords
+     * todo: make rule above more specific
+     * and remove this one */
+    background: transparent;
+}
+
 /* ----- Red Popup notification ----- */
 
 .vote-notification {
     z-index: 1;
+    background-color: #8e0000;
+    color: white;
     cursor: pointer;
     display: none;
-    position: absolute;
     font-family:@secondary-font;
     font-size:14px;
     font-weight:normal;
-    color: white;
-    background-color: #8e0000;
-    text-align: center;
     padding-bottom:10px;
+    position: absolute;
+    text-align: center;
     .box-shadow(0px, 2px, 4px, #370000);
     .rounded-corners(4px);
 
     h3{
         background:url(../images/notification.png) repeat-x top;
-       padding:10px 10px 10px 10px;
-       font-size:13px;
-       margin-bottom:5px;
-       border-top:#8e0000 1px solid;
-       color:#fff;
-       font-weight:normal;
-       .rounded-corners-top(4px);
+        padding:10px 10px 10px 10px;
+        font-size:13px;
+        margin-bottom:5px;
+        border-top:#8e0000 1px solid;
+        color:#fff;
+        line-height: 20px;
+        font-weight:normal;
+        .rounded-corners-top(4px);
     }
     a {
         color: #fb7321;
@@ -4331,10 +4496,6 @@ textarea.tipped-input {
 .tag-subscriptions {
     border-spacing: 10px; 
     border-collapse: separate;
-
-    button {
-        .button-style(27px, 14px);
-    }
 
     form {
         display: inline-block;

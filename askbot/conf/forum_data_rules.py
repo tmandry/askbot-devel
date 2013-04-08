@@ -15,7 +15,7 @@ FORUM_DATA_RULES = livesettings.ConfigurationGroup(
 
 EDITOR_CHOICES = (
     ('markdown', 'markdown'),
-    ('tinymce', 'WISYWIG (tinymce)')
+    ('tinymce', 'WYSIWYG (tinymce)')
 )
 
 settings.register(
@@ -27,6 +27,36 @@ settings.register(
         description = _('Editor for the posts')
     )
 )
+
+COMMENTS_EDITOR_CHOICES = (
+    ('plain-text', 'Plain text editor'),
+    ('rich-text', 'Same editor as for questions and answers')
+)
+
+settings.register(
+    livesettings.StringValue(
+        FORUM_DATA_RULES,
+        'COMMENTS_EDITOR_TYPE',
+        default='plain-text',
+        choices=COMMENTS_EDITOR_CHOICES,
+        description=_('Editor for the comments')
+    )
+)
+
+settings.register(
+    livesettings.BooleanValue(
+        FORUM_DATA_RULES,
+        'ASK_BUTTON_ENABLED',
+        default=True,
+        description=_('Enable big Ask button'),
+        help_text=_(
+            'Disabling this button will reduce number of new questions. '
+            'If this button is disabled, the ask button in the search menu '
+            'will still be available.'
+        )
+    )
+)
+
 
 settings.register(
     livesettings.BooleanValue(
@@ -315,8 +345,12 @@ settings.register(
     livesettings.BooleanValue(
         FORUM_DATA_RULES,
         'SAVE_COMMENT_ON_ENTER',
-        default = True,
-        description = _('Save comment by pressing <Enter> key')
+        default=False,
+        description=_('Save comment by pressing <Enter> key'),
+        help_text=_(
+            'This may be useful when only one-line comments '
+            'are desired. Will not work with TinyMCE editor.'
+        )
     )
 )
 
@@ -354,7 +388,7 @@ settings.register(
     )
 )
 
-#todo: looks like there is a bug in askbot.deps.livesettings 
+#todo: looks like there is a bug in askbot.deps.livesettings
 #that does not allow Integer values with defaults and choices
 settings.register(
     livesettings.StringValue(

@@ -11,6 +11,7 @@ from django.contrib.humanize.templatetags import humanize
 from django.template import defaultfilters
 from django.core.urlresolvers import reverse, resolve
 from django.http import Http404
+from django.utils import simplejson
 from askbot import exceptions as askbot_exceptions
 from askbot.conf import settings as askbot_settings
 from django.conf import settings as django_settings
@@ -39,8 +40,22 @@ def add_tz_offset(datetime_object):
     return str(datetime_object) + ' ' + TIMEZONE_STR
 
 @register.filter
+def as_js_bool(some_object):
+    if bool(some_object):
+        return 'true'
+    return 'false'
+
+@register.filter
+def as_json(data):
+    return simplejson.dumps(data)
+
+@register.filter
 def is_current_language(lang):
     return lang == django_get_language()
+
+@register.filter
+def to_int(value):
+    return int(value)
 
 @register.filter
 def safe_urlquote(text, quote_plus = False):

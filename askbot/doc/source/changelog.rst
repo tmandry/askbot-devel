@@ -3,6 +3,13 @@ Changes in Askbot
 
 Development version
 -------------------
+* Added possibility to choose editor for comments: plain text, or same as
+  editor used for the questions or answers: WMD or TinyMCE.
+* Added ajax search to the tags page
+* Added a placeholder template for the custom javascript on the question page
+* Allowed to disable the big "ask" button.
+* Some support for the media compression (Tyler Mandry)
+* Allowed to enable and disable question scopes on the main page
 * Added full text support for some languages with Postgresql:
   Danish, Dutch, English, Finnish, French, German, Hungarian,
   Italian, Japanese (requires package textsearch_ja), Norwegian,
