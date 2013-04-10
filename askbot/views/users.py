@@ -525,13 +525,15 @@ def user_stats(request, user, context):
         'subscribed_tag_names': subscribed_tag_names,
         'badges': badges,
         'total_badges' : len(badges),
+
+        'reputes': get_user_reputation(user)['reputation'],
+        'activities': get_user_activities(user)['activities'],
     }
     context.update(data)
 
     return render(request, 'user_profile/user_stats.html', context)
 
-def user_recent(request, user, context):
-
+def get_user_activities(user):
     def get_type_name(type_id):
         for item in const.TYPE_ACTIVITY:
             if type_id in item:
@@ -589,19 +591,19 @@ def user_recent(request, user, context):
         # TODO: multi-if means that we have here a construct for which a design pattern should be used
 
         # ask questions
-        if activity.activity_type == const.TYPE_ACTIVITY_ASK_QUESTION:
-            question = activity.content_object
-            if not question.deleted:
-                activities.append(Event(
-                    time=activity.active_at,
-                    type=activity.activity_type,
-                    title=question.thread.title,
-                    summary='', #q.summary,  # TODO: was set to '' before, but that was probably wrong
-                    answer_id=0,
-                    question_id=question.id
-                ))
+        # FIX: activity.content_object isn't returning a question
+        # if activity.activity_type == const.TYPE_ACTIVITY_ASK_QUESTION:
+        #     question = activity.content_object
+        #     activities.append(Event(
+        #         time=activity.active_at,
+        #         type=activity.activity_type,
+        #         title=question.thread.title,
+        #         summary='', #q.summary,  # TODO: was set to '' before, but that was probably wrong
+        #         answer_id=0,
+        #         question_id=question.id
+        #     ))
 
-        elif activity.activity_type == const.TYPE_ACTIVITY_ANSWER:
+        if activity.activity_type == const.TYPE_ACTIVITY_ANSWER:
             ans = activity.content_object
             question = ans.thread._question_post()
             if not ans.deleted and not question.deleted:
@@ -693,7 +695,7 @@ def user_recent(request, user, context):
 
     activities.sort(key=operator.attrgetter('time'), reverse=True)
 
-    data = {
+    return {
         'active_tab': 'users',
         'page_class': 'user-profile-page',
         'tab_name' : 'recent',
@@ -701,7 +703,9 @@ def user_recent(request, user, context):
         'page_title' : _('profile - recent activity'),
         'activities' : activities
     }
-    context.update(data)
+
+def user_recent(request, user, context):
+    context.update(get_user_activities(user))
     return render(request, 'user_profile/user_recent.html', context)
 
 #not a view - no direct url route here, called by `user_responses`
@@ -915,8 +919,7 @@ def user_votes(request, user, context):
     context.update(data)
     return render(request, 'user_profile/user_votes.html', context)
 
-
-def user_reputation(request, user, context):
+def get_user_reputation(user):
     reputes = models.Repute.objects.filter(user=user).select_related('question', 'question__thread', 'user').order_by('-reputed_at')
 
     # prepare data for the graph - last values go in first
@@ -926,7 +929,7 @@ def user_reputation(request, user, context):
     reps = ','.join(rep_list)
     reps = '[%s]' % reps
 
-    data = {
+    return {
         'active_tab':'users',
         'page_class': 'user-profile-page',
         'tab_name': 'reputation',
@@ -935,7 +938,9 @@ def user_reputation(request, user, context):
         'reputation': reputes,
         'reps': reps
     }
-    context.update(data)
+
+def user_reputation(request, user, context):
+    context.update(get_user_reputation(user))
     return render(request, 'user_profile/user_reputation.html', context)
 
 
