@@ -943,6 +943,44 @@ def user_reputation(request, user, context):
     context.update(get_user_reputation(user))
     return render(request, 'user_profile/user_reputation.html', context)
 
+def user_questions(request, user, context):
+    question_filter = {}
+    if request.user != user:
+        question_filter['is_anonymous'] = False
+
+    if askbot_settings.ENABLE_CONTENT_MODERATION:
+        question_filter['approved'] = True
+
+    data = {
+        'questions': user.posts.get_questions(
+                user=request.user
+            ).filter(
+                **question_filter
+            ).order_by(
+                '-points', '-thread__last_activity_at'
+            ).select_related(
+                'thread', 'thread__last_activity_by'
+            )
+    }
+    context.update(data)
+    return render(request, 'user_profile/user_questions.html', context)
+
+def user_answers(request, user, context):
+    data = {
+        'answers': user.posts.get_answers(
+                request.user
+            ).filter(
+                deleted=False,
+                thread__posts__deleted=False,
+                thread__posts__post_type='question',
+            ).select_related(
+                'thread'
+            ).order_by(
+                '-points', '-added_at'
+            )
+    }
+    context.update(data)
+    return render(request, 'user_profile/user_answers.html', context)
 
 def user_favorites(request, user, context):
     favorite_threads = user.user_favorite_questions.values_list('thread', flat=True)
@@ -1067,6 +1105,8 @@ USER_VIEW_CALL_TABLE = {
     'votes': user_votes,
     'email_subscriptions': user_email_subscriptions,
     'moderation': user_moderate,
+    'questions': user_questions,
+    'answers': user_answers,
 }
 
 CUSTOM_TAB = getattr(django_settings, 'ASKBOT_CUSTOM_USER_PROFILE_TAB', None)
