@@ -391,6 +391,7 @@ def user_stats(request, user, context):
     top_answers = user.posts.get_answers(
         request.user
     ).filter(
+        deleted=False,
         thread__posts__deleted=False,
         thread__posts__post_type='question',
     ).select_related(
