@@ -629,8 +629,7 @@ def set_login_provider_tooltips(provider_dict, active_provider_names = None):
                                 {'provider': provider['display_name']}
                 else:
                     tooltip = _(
-                        'Click to see if your %(provider)s '
-                        'signin still works for %(site_name)s'
+                        'Sign in with your %(site_name)s account'
                     ) % {
                         'provider': provider['display_name'],
                         'site_name': askbot_settings.APP_SHORT_NAME
