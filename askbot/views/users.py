@@ -409,17 +409,6 @@ def user_stats(request, user, context):
     votes_today = models.Vote.objects.get_votes_count_today_from_user(user)
     votes_total = askbot_settings.MAX_VOTES_PER_USER_PER_DAY
 
-    #
-    # Tags
-    #
-    # INFO: There's bug in Django that makes the following query kind of broken (GROUP BY clause is problematic):
-    #       http://stackoverflow.com/questions/7973461/django-aggregation-does-excessive-group-by-clauses
-    #       Fortunately it looks like it returns correct results for the test data
-    user_tags = models.Tag.objects.filter(threads__posts__author=user).distinct().\
-                    annotate(user_tag_usage_count=Count('threads')).\
-                    order_by('-user_tag_usage_count')[:const.USER_VIEW_DATA_SIZE]
-    user_tags = list(user_tags) # evaluate
-
     when = askbot_settings.MARKED_TAGS_ARE_PUBLIC_WHEN
     if when == 'always' or \
         (when == 'when-user-wants' and user.show_marked_tags == True):
@@ -444,6 +433,67 @@ def user_stats(request, user, context):
 #            print t['thread'], t['id']
 #    import ipdb; ipdb.set_trace()
 
+    user_groups = models.Group.objects.get_for_user(user = user)
+    user_groups = user_groups.exclude_personal()
+    global_group = models.Group.objects.get_global_group()
+    user_groups = user_groups.exclude(name=global_group.name)
+
+    if request.user == user:
+        groups_membership_info = user.get_groups_membership_info(user_groups)
+    else:
+        groups_membership_info = collections.defaultdict()
+
+    data = {
+        'active_tab':'users',
+        'page_class': 'user-profile-page',
+        'support_custom_avatars': ('avatar' in django_settings.INSTALLED_APPS),
+        'tab_name' : 'stats',
+        'tab_description' : _('user profile'),
+        'page_title' : _('user profile overview'),
+        'user_status_for_display': user.get_status_display(soft = True),
+        'questions' : questions,
+        'question_count': question_count,
+
+        'top_answers': top_answers,
+        'top_answer_count': top_answer_count,
+
+        'up_votes' : up_votes,
+        'down_votes' : down_votes,
+        'total_votes': up_votes + down_votes,
+        'votes_today_left': votes_total - votes_today,
+        'votes_total_per_day': votes_total,
+
+        'user_tags' : get_user_tags(user),
+        'user_groups': user_groups,
+        'groups_membership_info': groups_membership_info,
+        'interesting_tag_names': interesting_tag_names,
+        'ignored_tag_names': ignored_tag_names,
+        'subscribed_tag_names': subscribed_tag_names,
+        'badges': get_user_badges(user),
+        'total_badges' : len(get_user_badges(user)),
+
+        'reputes': get_user_reputation(user)['reputation'],
+        'activities': get_user_activities(user)['activities'],
+    }
+    context.update(data)
+
+    return render(request, 'user_profile/user_stats.html', context)
+
+def get_user_tags(user):
+    #
+    # Tags
+    #
+    # INFO: There's bug in Django that makes the following query kind of broken (GROUP BY clause is problematic):
+    #       http://stackoverflow.com/questions/7973461/django-aggregation-does-excessive-group-by-clauses
+    #       Fortunately it looks like it returns correct results for the test data
+    user_tags = models.Tag.objects.filter(threads__posts__author=user).distinct().\
+                    annotate(user_tag_usage_count=Count('threads')).\
+                    order_by('-user_tag_usage_count')[:const.USER_VIEW_DATA_SIZE]
+    user_tags = list(user_tags) # evaluate
+
+    return user_tags
+
+def get_user_badges(user):
     #
     # Badges/Awards (TODO: refactor into Managers/QuerySets when a pattern emerges; Simplify when we get rid of Question&Answer models)
     #
@@ -487,51 +537,7 @@ def user_stats(request, user, context):
     badges = badges_dict.items()
     badges.sort(key=operator.itemgetter(1), reverse=True)
 
-    user_groups = models.Group.objects.get_for_user(user = user)
-    user_groups = user_groups.exclude_personal()
-    global_group = models.Group.objects.get_global_group()
-    user_groups = user_groups.exclude(name=global_group.name)
-
-    if request.user == user:
-        groups_membership_info = user.get_groups_membership_info(user_groups)
-    else:
-        groups_membership_info = collections.defaultdict()
-
-    data = {
-        'active_tab':'users',
-        'page_class': 'user-profile-page',
-        'support_custom_avatars': ('avatar' in django_settings.INSTALLED_APPS),
-        'tab_name' : 'stats',
-        'tab_description' : _('user profile'),
-        'page_title' : _('user profile overview'),
-        'user_status_for_display': user.get_status_display(soft = True),
-        'questions' : questions,
-        'question_count': question_count,
-
-        'top_answers': top_answers,
-        'top_answer_count': top_answer_count,
-
-        'up_votes' : up_votes,
-        'down_votes' : down_votes,
-        'total_votes': up_votes + down_votes,
-        'votes_today_left': votes_total - votes_today,
-        'votes_total_per_day': votes_total,
-
-        'user_tags' : user_tags,
-        'user_groups': user_groups,
-        'groups_membership_info': groups_membership_info,
-        'interesting_tag_names': interesting_tag_names,
-        'ignored_tag_names': ignored_tag_names,
-        'subscribed_tag_names': subscribed_tag_names,
-        'badges': badges,
-        'total_badges' : len(badges),
-
-        'reputes': get_user_reputation(user)['reputation'],
-        'activities': get_user_activities(user)['activities'],
-    }
-    context.update(data)
-
-    return render(request, 'user_profile/user_stats.html', context)
+    return badges
 
 def get_user_activities(user):
     def get_type_name(type_id):
@@ -966,6 +972,20 @@ def user_questions(request, user, context):
     context.update(data)
     return render(request, 'user_profile/user_questions.html', context)
 
+def user_tags(request, user, context):
+    data = {
+        'tags': get_user_tags(user)
+    }
+    context.update(data)
+    return render(request, 'user_profile/user_tags.html', context)
+
+def user_badges(request, user, context):
+    data = {
+        'badges': get_user_badges(user)
+    }
+    context.update(data)
+    return render(request, 'user_profile/user_badges.html', context)
+
 def user_answers(request, user, context):
     data = {
         'answers': user.posts.get_answers(
@@ -1108,6 +1128,8 @@ USER_VIEW_CALL_TABLE = {
     'moderation': user_moderate,
     'questions': user_questions,
     'answers': user_answers,
+    'tags': user_tags,
+    'badges': user_badges,
 }
 
 CUSTOM_TAB = getattr(django_settings, 'ASKBOT_CUSTOM_USER_PROFILE_TAB', None)
