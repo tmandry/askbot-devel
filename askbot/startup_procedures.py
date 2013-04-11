@@ -114,16 +114,16 @@ def test_jinja2():
     compressor_ext = 'compressor.contrib.jinja2ext.CompressorExtension'
     ext_list = getattr(django_settings, 'JINJA2_EXTENSIONS', None)
     errors = list()
-    if ext_list is None:
-        errors.append(
-            "Please add the following line to your settings.py:\n"
-            "JINJA2_EXTENSIONS = ('%s',)" % compressor_ext
-        )
-    elif compressor_ext not in ext_list:
-        errors.append(
-            "Please add to the JINJA2_EXTENSIONS list an item:\n"
-            "'%s'," % compressor_ext
-        )
+    # if ext_list is None:
+    #     errors.append(
+    #         "Please add the following line to your settings.py:\n"
+    #         "JINJA2_EXTENSIONS = ('%s',)" % compressor_ext
+    #     )
+    # elif compressor_ext not in ext_list:
+    #     errors.append(
+    #         "Please add to the JINJA2_EXTENSIONS list an item:\n"
+    #         "'%s'," % compressor_ext
+    #     )
 
     print_errors(errors)
 
