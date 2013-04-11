@@ -592,16 +592,17 @@ def get_user_activities(user):
 
         # ask questions
         # FIX: activity.content_object isn't returning a question
-        # if activity.activity_type == const.TYPE_ACTIVITY_ASK_QUESTION:
-        #     question = activity.content_object
-        #     activities.append(Event(
-        #         time=activity.active_at,
-        #         type=activity.activity_type,
-        #         title=question.thread.title,
-        #         summary='', #q.summary,  # TODO: was set to '' before, but that was probably wrong
-        #         answer_id=0,
-        #         question_id=question.id
-        #     ))
+        if activity.activity_type == const.TYPE_ACTIVITY_ASK_QUESTION:
+            question = activity.content_object
+            if question is not None and not question.deleted:
+                activities.append(Event(
+                    time=activity.active_at,
+                    type=activity.activity_type,
+                    title=question.thread.title,
+                    summary='', #q.summary,  # TODO: was set to '' before, but that was probably wrong
+                    answer_id=0,
+                    question_id=question.id
+                ))
 
         if activity.activity_type == const.TYPE_ACTIVITY_ANSWER:
             ans = activity.content_object
@@ -620,7 +621,7 @@ def get_user_activities(user):
             cm = activity.content_object
             q = cm.parent
             #assert q.is_question(): todo the activity types may be wrong
-            if not q.deleted:
+            if q is not None and not q.deleted:
                 activities.append(Event(
                     time=cm.added_at,
                     type=activity.activity_type,
