@@ -594,7 +594,7 @@ def get_user_activities(user):
         # FIX: activity.content_object isn't returning a question
         if activity.activity_type == const.TYPE_ACTIVITY_ASK_QUESTION:
             question = activity.content_object
-            if question is not None and not question.deleted:
+            if question is not None and isinstance(question, models.Post) and not question.deleted:
                 activities.append(Event(
                     time=activity.active_at,
                     type=activity.activity_type,

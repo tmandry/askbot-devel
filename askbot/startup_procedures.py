@@ -335,11 +335,11 @@ def test_compressor():
             'COMPRESS_JS_FILTERS = []'
         )
 
-    if 'compressor' not in django_settings.INSTALLED_APPS:
-        errors.append(
-            'add to the INSTALLED_APPS the following entry:\n'
-            "    'compressor',"
-        )
+    # if 'compressor' not in django_settings.INSTALLED_APPS:
+    #     errors.append(
+    #         'add to the INSTALLED_APPS the following entry:\n'
+    #         "    'compressor',"
+    #     )
 
     print_errors(errors)
 
