@@ -3283,7 +3283,7 @@ def notify_award_message(instance, created, **kwargs):
 
         badge = get_badge(instance.badge.slug)
 
-        msg = _(u"Congratulations, you have received a badge '%(badge_name)s'. "
+        msg = _(u"Congratulations, received the '%(badge_name)s badge!'. "
                 u"Check out <a href=\"%(user_profile)s\">your profile</a>.") \
                 % {
                     'badge_name':badge.name,
