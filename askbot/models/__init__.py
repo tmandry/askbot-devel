@@ -249,10 +249,10 @@ def user_get_gravatar_url(self, size):
     """returns gravatar url
     """
 
-    assoc = UserAssociation.objects.get(user_id=self.id)
+    assoc = UserAssociation.objects.filter(user_id=self.id)
 
-    if assoc.provider_name == "facebook":
-        return "//graph.facebook.com/" + assoc.openid_url + "/picture?type=large"
+    if len(assoc) > 0 and assoc[0].provider_name == "facebook":
+        return "//graph.facebook.com/" + assoc[0].openid_url + "/picture?type=large"
     else:
         return GRAVATAR_TEMPLATE % {
                         'gravatar': self.gravatar,
