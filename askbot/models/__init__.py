@@ -252,7 +252,7 @@ def user_get_gravatar_url(self, size):
     assoc = UserAssociation.objects.filter(user_id=self.id)
 
     if len(assoc) > 0 and assoc[0].provider_name == "facebook":
-        return "//graph.facebook.com/" + assoc[0].openid_url + "/picture?type=large"
+        return "//graph.facebook.com/" + assoc[0].openid_url + "/picture?width=200&height=200"
     else:
         return GRAVATAR_TEMPLATE % {
                         'gravatar': self.gravatar,
