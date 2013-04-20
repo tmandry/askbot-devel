@@ -66,6 +66,7 @@ from askbot.utils.html import sanitize_html
 from askbot.utils.diff import textDiff as htmldiff
 from askbot.utils.url_utils import strip_path
 from askbot import mail
+from askbot.deps.django_authopenid.models import UserAssociation
 
 from django import VERSION
 
@@ -247,11 +248,17 @@ GRAVATAR_TEMPLATE = "//www.gravatar.com/avatar/%(gravatar)s?" + \
 def user_get_gravatar_url(self, size):
     """returns gravatar url
     """
-    return GRAVATAR_TEMPLATE % {
-                'gravatar': self.gravatar,
-                'type': askbot_settings.GRAVATAR_TYPE,
-                'size': size,
-            }
+
+    assoc = UserAssociation.objects.get(user_id=self.id)
+
+    if assoc.provider_name == "facebook":
+        return "//graph.facebook.com/" + assoc.openid_url + "/picture?type=large"
+    else:
+        return GRAVATAR_TEMPLATE % {
+                        'gravatar': self.gravatar,
+                        'type': askbot_settings.GRAVATAR_TYPE,
+                        'size': size,
+                    }
 
 def user_get_default_avatar_url(self, size):
     """returns default avatar url
