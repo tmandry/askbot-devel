@@ -402,9 +402,9 @@ BADGE_TYPE_CHOICES = (
     (BRONZE_BADGE, _('bronze')),
 )
 BADGE_CSS_CLASSES = {
-    GOLD_BADGE: 'badge1',
-    SILVER_BADGE: 'badge2',
-    BRONZE_BADGE: 'badge3',
+    GOLD_BADGE: 'gold',
+    SILVER_BADGE: 'silver',
+    BRONZE_BADGE: 'bronze',
 }
 BADGE_DISPLAY_SYMBOL = '&#9679;'
 
