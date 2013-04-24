@@ -57,6 +57,7 @@ from askbot.deps.django_authopenid.ldap_auth import ldap_authenticate
 from askbot.utils.loading import load_module
 from sanction.client import Client as OAuth2Client
 from urlparse import urlparse
+from askags.models import UserInfo
 
 from openid.consumer.consumer import Consumer, \
     SUCCESS, CANCEL, FAILURE, SETUP_NEEDED
@@ -1140,6 +1141,7 @@ def signup_with_password(request):
 
         #validation outside if to remember form values
         logging.debug('validating classic register form')
+        # logging.debug('form fields: ' + str(form.fields))
         form1_is_valid = form.is_valid()
         if form1_is_valid:
             logging.debug('classic register form validated')
@@ -1153,12 +1155,33 @@ def signup_with_password(request):
             password = form.cleaned_data['password1']
             email = form.cleaned_data['email']
 
+            user_type = form.cleaned_data['user_type']
+            type_description = form.cleaned_data['type_description']
+            college_class = form.cleaned_data['college_class']
+            college_major = form.cleaned_data['college_major']
+            school_email = form.cleaned_data['college_major']
+            high_school_class = form.cleaned_data['high_school_class']
+            staff_dept = form.cleaned_data['staff_dept']
+            hometown = form.cleaned_data['hometown']
+
             if askbot_settings.REQUIRE_VALID_EMAIL_FOR == 'nothing':
                 user = create_authenticated_user_account(
                     username=username,
                     email=email,
                     password=password,
                 )
+
+                user_info = UserInfo(user_type = user_type,
+                                     type_description = type_description,
+                                     college_class = college_class,
+                                     college_major = college_major,
+                                     school_email = school_email,
+                                     high_school_class = high_school_class,
+                                     staff_dept = staff_dept,
+                                     hometown = hometown,
+                                     user = user)
+                user_info.save()
+
                 login(request, user)
                 cleanup_post_register_session(request)
                 return HttpResponseRedirect(get_next_url(request))

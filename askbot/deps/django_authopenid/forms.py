@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007, 2008, Benoît Chesneau
-# 
+#
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met:
-# 
+#
 #      * Redistributions of source code must retain the above copyright
 #      * notice, this list of conditions and the following disclaimer.
 #      * Redistributions in binary form must reproduce the above copyright
@@ -16,7 +16,7 @@
 #      * of its contributors may be used to endorse or promote products
 #      * derived from this software without specific prior written
 #      * permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 # IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 # THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
@@ -41,13 +41,15 @@ from django.utils.safestring import mark_safe
 from recaptcha_works.fields import RecaptchaField
 from askbot.utils.forms import NextUrlField, UserNameField, UserEmailField, SetPasswordForm
 from askbot.utils.loading import load_module
+from askags.models import UserInfo
+from datetime import datetime
 
 # needed for some linux distributions like debian
 try:
     from openid.yadis import xri
 except ImportError:
     from yadis import xri
-    
+
 from askbot.deps.django_authopenid import util
 
 __all__ = [
@@ -58,7 +60,7 @@ __all__ = [
 ]
 
 class LoginProviderField(forms.CharField):
-    """char field where value must 
+    """char field where value must
     be one of login providers
     """
     widget = forms.widgets.HiddenInput()
@@ -80,7 +82,7 @@ class LoginProviderField(forms.CharField):
             raise forms.ValidationError(error_message)
 
 class PasswordLoginProviderField(LoginProviderField):
-    """char field where value must 
+    """char field where value must
     be one of login providers using username/password
     method for authentication
     """
@@ -131,10 +133,10 @@ class LoginForm(forms.Form):
                         )
     username = UserNameField(required=False, skip_clean=True)
     password = forms.CharField(
-                    max_length=128, 
+                    max_length=128,
                     widget=forms.widgets.PasswordInput(
                                             attrs={'class':'required login'}
-                                        ), 
+                                        ),
                     required=False
                 )
     password_action = forms.CharField(
@@ -143,17 +145,17 @@ class LoginForm(forms.Form):
                             widget=forms.widgets.HiddenInput()
                         )
     new_password = forms.CharField(
-                    max_length=128, 
+                    max_length=128,
                     widget=forms.widgets.PasswordInput(
                                             attrs={'class':'required login'}
-                                        ), 
+                                        ),
                     required=False
                 )
     new_password_retyped = forms.CharField(
-                    max_length=128, 
+                    max_length=128,
                     widget=forms.widgets.PasswordInput(
                                             attrs={'class':'required login'}
-                                        ), 
+                                        ),
                     required=False
                 )
 
@@ -271,7 +273,7 @@ class LoginForm(forms.Form):
             self.set_error_if_missing(
                 'new_password',
                  _('Please, enter your new password')
-            ) 
+            )
             self.set_error_if_missing(
                 'new_password_retyped',
                 _('Please, enter your new password')
@@ -321,6 +323,17 @@ class ClassicRegisterForm(SetPasswordForm):
     username = UserNameField(widget_attrs={'tabindex': 0})
     email = UserEmailField()
     login_provider = PasswordLoginProviderField()
+
+    year_choices = [(year, str(year)) for year in range(datetime.now().year, datetime.now().year + 5)]
+
+    user_type = forms.ChoiceField(choices=UserInfo.USER_TYPE_CHOICES, widget=forms.RadioSelect())
+    type_description = forms.CharField(max_length=128, label="(optional)", required=False)  # for Other
+    college_class = forms.ChoiceField(choices=year_choices, label="Class of", required=False)
+    college_major = forms.CharField(max_length=128, label="Major", required=False)  # for HS, interested/expected major
+    school_email = forms.EmailField(label="TAMU Email", required=False)
+    high_school_class = forms.ChoiceField(choices=year_choices, label="HS Class", required=False)
+    staff_dept = forms.CharField(max_length=128, label="Department", required=False)
+    hometown = forms.CharField(max_length=128, label="Hometown", required=False)
     #fields password1 and password2 are inherited
 
 class SafeClassicRegisterForm(ClassicRegisterForm):
@@ -356,7 +369,7 @@ class ChangeEmailForm(forms.Form):
 
     def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None, \
             initial=None, user=None):
-        super(ChangeEmailForm, self).__init__(data, files, auto_id, 
+        super(ChangeEmailForm, self).__init__(data, files, auto_id,
                 prefix, initial)
         self.user = user
 
@@ -366,7 +379,7 @@ class ChangeEmailForm(forms.Form):
             if askbot_settings.EMAIL_UNIQUE == True:
                 try:
                     user = User.objects.get(email = self.cleaned_data['email'])
-                    if self.user and self.user == user:   
+                    if self.user and self.user == user:
                         return self.cleaned_data['email']
                 except User.DoesNotExist:
                     return self.cleaned_data['email']
@@ -401,7 +414,7 @@ class AccountRecoveryForm(forms.Form):
                 del self.cleaned_data['email']
                 message = _('Sorry, we don\'t have this email address in the database')
                 raise forms.ValidationError(message)
-        
+
 class ChangeopenidForm(forms.Form):
     """ change openid form """
     openid_url = forms.CharField(max_length=255,
@@ -442,9 +455,9 @@ class EmailPasswordForm(forms.Form):
                         )
                 )
 
-    def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None, 
+    def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
             initial=None):
-        super(EmailPasswordForm, self).__init__(data, files, auto_id, 
+        super(EmailPasswordForm, self).__init__(data, files, auto_id,
                 prefix, initial)
         self.user_cache = None
 
