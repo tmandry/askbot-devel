@@ -339,7 +339,7 @@ class ClassicRegisterForm(SetPasswordForm):
 
     user_type = forms.ChoiceField(choices=UserInfo.USER_TYPE_CHOICES, widget=forms.RadioSelect())
     type_description = forms.CharField(max_length=128, label="(optional)", required=False)  # for Other
-    college_class = forms.ChoiceField(choices=year_choices, label="Class of", required=False)
+    college_class = forms.CharField(max_length=4, label="Class of", required=False)
     college_major = forms.CharField(max_length=128, label="Major", required=False)  # for HS, interested/expected major
     school_email = forms.EmailField(label="TAMU Email", required=False)
     high_school_class = forms.ChoiceField(choices=year_choices, label="HS Class", required=False)
