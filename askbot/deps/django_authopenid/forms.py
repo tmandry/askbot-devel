@@ -316,6 +316,17 @@ class OpenidRegisterForm(forms.Form):
     username = UserNameField(widget_attrs={'tabindex': 0})
     email = UserEmailField()
 
+    year_choices = [(year, str(year)) for year in range(datetime.now().year, datetime.now().year + 5)]
+
+    user_type = forms.ChoiceField(choices=UserInfo.USER_TYPE_CHOICES, widget=forms.RadioSelect())
+    type_description = forms.CharField(max_length=128, label="(optional)", required=False)  # for Other
+    college_class = forms.ChoiceField(choices=year_choices, label="Class of", required=False)
+    college_major = forms.CharField(max_length=128, label="Major", required=False)  # for HS, interested/expected major
+    school_email = forms.EmailField(label="TAMU Email", required=False)
+    high_school_class = forms.ChoiceField(choices=year_choices, label="HS Class", required=False)
+    staff_dept = forms.CharField(max_length=128, label="Department", required=False)
+    hometown = forms.CharField(max_length=128, label="Hometown", required=False)
+
 class ClassicRegisterForm(SetPasswordForm):
     """ legacy registration form """
 
@@ -334,7 +345,7 @@ class ClassicRegisterForm(SetPasswordForm):
     high_school_class = forms.ChoiceField(choices=year_choices, label="HS Class", required=False)
     staff_dept = forms.CharField(max_length=128, label="Department", required=False)
     hometown = forms.CharField(max_length=128, label="Hometown", required=False)
-    #fields password1 and password2 are inherited
+    # fields password1 and password2 are inherited
 
 class SafeClassicRegisterForm(ClassicRegisterForm):
     """this form uses recaptcha in addition

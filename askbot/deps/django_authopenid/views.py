@@ -91,7 +91,10 @@ from askbot.models.signals import user_logged_in, user_registered
 
 def create_authenticated_user_account(
     username=None, email=None, password=None,
-    user_identifier=None, login_provider_name=None
+    user_identifier=None, login_provider_name=None, user_type = None,
+    type_description=None, college_class=None, college_major=None,
+    school_email=None, high_school_class=None, staff_dept=None,
+    hometown=None
 ):
     """creates a user account, user association with
     the login method and the the default email subscriptions
@@ -112,6 +115,17 @@ def create_authenticated_user_account(
             provider_name = login_provider_name,
             last_used_timestamp = datetime.datetime.now()
         ).save()
+
+    if user_type:
+        UserInfo(user_type = user_type,
+                 type_description = type_description,
+                 college_class = college_class,
+                 college_major = college_major,
+                 school_email = school_email,
+                 high_school_class = high_school_class,
+                 staff_dept = staff_dept,
+                 hometown = hometown,
+                 user = user).save()
 
     subscribe_form = askbot_forms.SimpleEmailSubscribeForm({'subscribe': 'y'})
     subscribe_form.full_clean()
@@ -997,6 +1011,14 @@ def register(request, login_provider_name=None, user_identifier=None):
         else:
             username = register_form.cleaned_data['username']
             email = register_form.cleaned_data['email']
+            user_type = register_form.cleaned_data['user_type']
+            type_description = register_form.cleaned_data['type_description']
+            college_class = register_form.cleaned_data['college_class']
+            college_major = register_form.cleaned_data['college_major']
+            school_email = register_form.cleaned_data['college_major']
+            high_school_class = register_form.cleaned_data['high_school_class']
+            staff_dept = register_form.cleaned_data['staff_dept']
+            hometown = register_form.cleaned_data['hometown']
 
             if 'ldap_user_info' in request.session:
                 user_info = request.session['ldap_user_info']
@@ -1018,6 +1040,14 @@ def register(request, login_provider_name=None, user_identifier=None):
                             email=email,
                             user_identifier=user_identifier,
                             login_provider_name=login_provider_name,
+                            user_type=user_type,
+                            type_description=type_description,
+                            college_class=college_class,
+                            college_major=college_major,
+                            school_email=school_email,
+                            high_school_class=high_school_class,
+                            staff_dept=staff_dept,
+                            hometown=hometown
                         )
                 login(request, user)
                 cleanup_post_register_session(request)
@@ -1169,18 +1199,15 @@ def signup_with_password(request):
                     username=username,
                     email=email,
                     password=password,
+                    user_type=user_type,
+                    type_description=type_description,
+                    college_class=college_class,
+                    college_major=college_major,
+                    school_email=school_email,
+                    high_school_class=high_school_class,
+                    staff_dept=staff_dept,
+                    hometown=hometown
                 )
-
-                user_info = UserInfo(user_type = user_type,
-                                     type_description = type_description,
-                                     college_class = college_class,
-                                     college_major = college_major,
-                                     school_email = school_email,
-                                     high_school_class = high_school_class,
-                                     staff_dept = staff_dept,
-                                     hometown = hometown,
-                                     user = user)
-                user_info.save()
 
                 login(request, user)
                 cleanup_post_register_session(request)
