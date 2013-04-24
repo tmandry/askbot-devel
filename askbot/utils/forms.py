@@ -90,7 +90,7 @@ class UserNameField(StrippedNonEmptyCharField):
         db_field='username',
         must_exist=False,
         skip_clean=False,
-        label=_('Choose a screen name'),
+        label=_('Your name'),
         widget_attrs=None,
         **kw
     ):
