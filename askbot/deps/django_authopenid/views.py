@@ -58,6 +58,7 @@ from askbot.utils.loading import load_module
 from sanction.client import Client as OAuth2Client
 from urlparse import urlparse
 from askags.models import UserInfo
+from django.views.decorators.debug import sensitive_post_parameters
 
 from openid.consumer.consumer import Consumer, \
     SUCCESS, CANCEL, FAILURE, SETUP_NEEDED
@@ -411,6 +412,7 @@ def complete_oauth_signin(request):
 
 #@not_authenticated
 @csrf.csrf_protect
+@sensitive_post_parameters('password')
 def signin(request, template_name='authopenid/signin.html'):
     """
     signin page. It manages the legacy authentification (user/password)
@@ -951,6 +953,7 @@ def finalize_generic_signin(
 
 @not_authenticated
 @csrf.csrf_protect
+@sensitive_post_parameters('password1','password2')
 def register(request, login_provider_name=None, user_identifier=None):
     """
     this function is used via it's own url with request.method=POST
@@ -1150,6 +1153,7 @@ def verify_email_and_register(request):
 @decorators.valid_password_login_provider_required
 @csrf.csrf_protect
 @fix_recaptcha_remote_ip
+@sensitive_post_parameters('password1','password2')
 def signup_with_password(request):
     """Create a password-protected account
     template: authopenid/signup_with_password.html
