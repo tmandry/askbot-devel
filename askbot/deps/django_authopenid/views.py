@@ -120,10 +120,10 @@ def create_authenticated_user_account(
     if user_type:
         UserInfo(user_type = user_type,
                  type_description = type_description,
-                 college_class = college_class,
+                 college_class = college_class or None,
                  college_major = college_major,
                  school_email = school_email,
-                 high_school_class = high_school_class,
+                 high_school_class = high_school_class or None,
                  staff_dept = staff_dept,
                  hometown = hometown,
                  user = user).save()
