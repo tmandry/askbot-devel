@@ -28,6 +28,7 @@ from askbot.skins.loaders import render_text_into_skin
 from askbot.utils.decorators import admins_only
 from askbot.utils.forms import get_next_url
 from askbot.utils import functions
+import datetime
 
 def generic_view(request, template = None, page_class = None):
     """this may be not necessary, since it is just a rewrite of render"""
@@ -88,7 +89,10 @@ def faq(request):
         return render(request, 'faq_static.html', data)
 
 def channel(request):
-    return render(request, 'channel_static.html', {})
+    response = render(request, 'channel_static.html', {})
+    expires = datetime.datetime.utcnow() + datetime.timedelta(days = 365)
+    response['Expires'] = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
+    return response
 
 @csrf.csrf_protect
 def feedback(request):
