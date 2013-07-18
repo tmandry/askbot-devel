@@ -87,6 +87,9 @@ def faq(request):
         }
         return render(request, 'faq_static.html', data)
 
+def channel(request):
+    return render(request, 'channel_static.html', {})
+
 @csrf.csrf_protect
 def feedback(request):
     data = {'page_class': 'meta'}
