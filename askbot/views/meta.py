@@ -94,6 +94,13 @@ def channel(request):
     response['Expires'] = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
     return response
 
+@csrf.requires_csrf_token
+def register_fb(request):
+    response = render(request, 'register_fb_static.html', {})
+    expires = datetime.datetime.utcnow() + datetime.timedelta(days = 30)
+    response['Expires'] = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
+    return response
+
 @csrf.csrf_protect
 def feedback(request):
     data = {'page_class': 'meta'}

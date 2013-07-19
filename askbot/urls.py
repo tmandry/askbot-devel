@@ -42,6 +42,7 @@ urlpatterns = patterns('',
     url(r'^%s$' % _('about/'), views.meta.about, name='about'),
     url(r'^%s$' % _('faq/'), views.meta.faq, name='faq'),
     url(r'^%s$' % _('channel.html'), views.meta.channel, name='channel'),
+    url(r'^%s$' % _('register_fb.html'), views.meta.register_fb, name='register_fb'),
     url(r'^%s$' % _('privacy/'), views.meta.privacy, name='privacy'),
     url(r'^%s$' % _('help/'), views.meta.help, name='help'),
     url(

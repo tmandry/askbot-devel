@@ -68,6 +68,7 @@ def index(request):#generates front page - shows listing of questions sorted in 
     """
     return HttpResponseRedirect(reverse('questions'))
 
+@csrf.requires_csrf_token
 def questions(request, **kwargs):
     """
     List of Questions, Tagged questions, and Unanswered questions.
